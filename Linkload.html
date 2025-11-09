@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sales Tracker & Office Dashboard</title>
+  <style>
+    /* ==== Modern Tech Theme (Base) === */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0f1115;
+      color: #ffffff;
+      padding: 20px;
+    }
+
+    /* ==== Header Layout (3-Column) ==== */
+    .header-layout {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      border-bottom: 1px solid #333;
+      padding-bottom: 15px;
+      margin-bottom: 30px;
+    }
+
+    #clock { display: none; }
+    
+    .stats-container {
+      flex: 1; 
+      min-width: 200px;
+      font-size: 18px;
+      color: #00ffcc;
+      font-weight: bold;
+      align-self: flex-start;
+    }
+
+    .form-container {
+      background: #1a1d24;
+      padding: 15px 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #00ffcc33;
+      flex-shrink: 0;
+    }
+
+    .dashboard-title {
+      flex-grow: 1;
+      text-align: center;
+      margin: 0;
+      padding: 0 10px;
+      font-size: 28px;
+      color: #00ffcc;
+    }
+    
+    #remaining, #workdays {
+      margin-top: 5px;
+      font-size: 16px;
+      color: #aafaea;
+      font-weight: normal;
+    }
+
+    .form-container h2 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      color: #00ffcc;
+    }
+
+    .sales-form {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .sales-form input[type="number"] {
+      width: 70px;
+      padding: 5px 8px;
+      font-size: 16px;
+      border-radius: 4px;
+      border: none;
+      background: #2a2e38;
+      color: white;
+    }
+
+    .sales-form button {
+      padding: 6px 14px;
+      font-size: 16px;
+      background-color: #00ffcc;
+      border: none;
+      color: #000;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .sales-form button:hover {
+      background-color: #00ddb3;
+    }
+
+    /* --- DASHBOARD QUICK LINKS STYLES --- */
+    
+    .main-content-heading {
+      margin-top: 30px;
+      margin-bottom: 20px;
+      color: #00ffcc;
+      border-bottom: 1px solid #333;
+      padding-bottom: 10px;
+    }
+
+    .button-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 40px;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .grid-button {
+      flex: 1;
+      min-width: 180px;
+      padding: 15px 18px;
+      background-color: #0099cc;
+      color: #fff;
+      text-align: center;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: bold;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .grid-button:hover {
+      background-color: #00ffcc;
+      color: #0f1115;
+      transform: translateY(-2px);
+    }
+
+    /* --- TABLE STYLES (NEW) --- */
+    .data-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    
+    .info-table {
+      flex: 1;
+      min-width: 300px;
+      background: #1a1d24;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 10px #00ffcc33;
+      padding: 20px;
+    }
+
+    .info-table h3 {
+      color: #00ffcc;
+      margin-top: 0;
+      border-bottom: 1px solid #333;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .info-table table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      text-align: left;
+    }
+
+    .info-table th, .info-table td {
+      padding: 10px 15px;
+      border-bottom: 1px solid #2a2e38;
+    }
+    
+    .info-table th {
+      background-color: #00ffcc;
+      color: #0f1115;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    
+    .info-table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .info-table tr:nth-child(even) {
+      background-color: #1a1d24;
+    }
+    
+    .info-table tr:nth-child(odd) {
+      background-color: #16181e;
+    }
+
+    /* --- FACEBOOK GROUP STYLES --- */
+
+    .group-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      padding-bottom: 20px;
+    }
+
+    .group-section a { text-decoration: none; }
+
+    .group-section button {
+      padding: 8px 12px;
+      background-color: #ffcc00;
+      color: black;
+      border: none;
+      border-radius: 5px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .group-section button:hover {
+      background-color: #ff0099;
+      color: white;
+    }
+
+    @media (max-width: 768px) {
+      .header-layout { flex-direction: column; align-items: center; }
+      .dashboard-title, .stats-container, .form-container { width: 100%; text-align: center; }
+      .stats-container { order: 2; }
+      .dashboard-title { order: 1; }
+      .form-container { order: 3; }
+      .data-section { flex-direction: column; }
+      .grid-button { min-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header-layout">
+    
+    <div class="stats-container">
+        <div id="clock">Loading...</div>
+        <div id="remaining">Remaining Target: 30</div>
+        <div id="workdays">Remaining Workdays (till 26th): Calculating...</div>
+    </div>
+    
+    <h1 class="dashboard-title">Office Quick Access Dashboard</h1>
+    
+    <div class="form-container">
+      <h2>Update Sales</h2>
+      <form id="salesForm" class="sales-form">
+        <input type="number" id="salesDone" min="1" value="1" required />
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+  </div>
+
+  <h2 class="main-content-heading">Quick Links</h2>
+
+  <div class="button-grid">
+    <div class="button-row">
+      <a href="https://docs.google.com/spreadsheets/d/1rtwivLpCUd-Ngv8b4WdLJUAjB075c8uXCWj445XoiIM/edit?usp=sharing" class="grid-button">Area Wise</a>
+      <a href="https://docs.google.com/spreadsheets/d/12m51eJMXyYt-oFnvdJmPnpCaGi0OsUfZ4jX7dDwfQYQ/edit?gid=480702382#gid=480702382" class="grid-button">Exemption</a>
+      <a href="https://docs.google.com/spreadsheets/d/1AtPF-wpE_Nml1_XY7rJ1MAx4AL4KXuyoCbehvgNIXtM/edit?gid=2006003688#gid=2006003688" class="grid-button">Vendor Payment</a>
+      <a href="https://docs.google.com/spreadsheets/d/1QGwNhdSKBEys-g6nUHlMtnBFYtTw1H8JWgNVuYWq1EU/edit?gid=0#gid=0" class="grid-button">Incubation Agent</a>
+      <a href="https://sites.google.com/d/1aNSgKCJgsdm_G81KTEo7rtOHyHZ52hLR/p/1m96ri8tsOlA5fthXBtHJYV3HYFRz_SIB/edit" class="grid-button">Common Dialogue</a>
+    </div>
+
+    <div class="button-row">
+      <a href="https://docs.google.com/spreadsheets/d/1Ak4J6W261d_jibEFsPC3NewkGL6q-PJTBzagQ-HRB14/edit?gid=1172387515#gid=1172387515" class="grid-button">Submission Tracker</a>
+      <a href="https://drive.google.com/drive/folders/1xuM3pZYDeQ7niI6_rRvChbUqXooXc3jq" class="grid-button">Grade Change Criterion</a>
+      <a href="https://www.google.com/maps/d/u/0/viewer?mid=1wDkhp-HrotHCvQ1RRxJq1rY7nHOKnLxl&ll=22.326182320245984%2C90.72342452601092&z=13" class="grid-button">Coverage</a>
+      <a href="https://docs.google.com/spreadsheets/d/14DxNtB1mNQFt3xsDEhk2I0eKk67m4KobpMoGRYuB2KQ/edit?gid=993891587#gid=993891587" class="grid-button">Placement Fee Exemptions</a>
+      <a href="https://sites.google.com/foodpanda.com.bd/fb-hadi/tipple-star" class="grid-button">Tripple</a>
+    </div>
+    <div class="button-row">
+      <a href="https://sites.google.com/foodpanda.com/apacsfwiki/getting-started-on-salesforce/creating-your-account-on-salesforce?authuser=0" class="grid-button">Creating Your Account on Salesforce</a>
+      <a href="https://docs.google.com/spreadsheets/d/1EGft4CMcIIp-FanraDfc_9LmmVMSlVFjexZ7u8EAP4/edit?gid=0#gid=0&fvid=931755938" class="grid-button">Performance</a>
+      <a href="https://docs.google.com/spreadsheets/d/10630qNFO9ho7Dplj6jZsczH8b8IpbWGs/edit?gid=1614653805#gid=1614653805" class="grid-button">QC Check List</a>
+      <a href="https://deliveryhero.enterprise.slack.com/files/U028MMB6R6Z/F08E5PTPY75/vendor-registration-form_oct23_goapp-ssu_final.docx" class="grid-button">Restaurant Signup Registration File</a>
+      <a href="https://docs.google.com/spreadsheets/d/1AtPF-wpE_Nml1_XY7rJ1MAx4AL4KXuyoCbehvgNIXtM/edit?gid=666823322#gid=666823322" class="grid-button">Winback Vendor Debt Check</a>
+    </div>
+    <div class="button-row">
+      <a href="https://docs.google.com/spreadsheets/d/12m51eJMXyYt-oFnvdJmPnpCaGi0OsUfZ4jX7dDwfQYQ/edit?gid=793822443#gid=793822443" class="grid-button">Vendor Payment Files 2024-2025</a>
+      <a href="https://docs.google.com/spreadsheets/d/1XM7YuiS9NGoQiklmLJeavXJoxNHp3KAoue8lj00IDQ4/edit?gid=1615851979#gid=1615851979" class="grid-button">Grading Feedback</a>
+      <a href="https://drive.google.com/file/d/1YoxZS6OXGBxdkWWpvkSjhkYWBBuoWeeg/view?usp=sharing" class="grid-button">Grade Change Triteria</a>
+      <a href="https://docs.google.com/spreadsheets/d/1XM7YuiS9NGoQiklmLJeavXJoxNHp3KAoue8lj00IDQ4/edit?usp=sharing" class="grid-button">Grade Change Link</a>
+      <a href="https://docs.google.com/spreadsheets/d/12m51eJMXyYt-oFnvdJmPnpCaGi0OsUfZ4jX7dDwfQYQ/edit?gid=793822443#gid=793822443" class="grid-button">Collection & Exemption</a>
+    </div>
+    <div class="button-row">
+      <a href="https://drive.google.com/file/d/1zKdoBG9emSZ31e95A78OZS4exwQAGmrb/view?usp=drive_link" class="grid-button">Opening Closing Time</a>
+      <a href="https://docs.google.com/spreadsheets/d/1gf0UZKEwsonhWHkgJE8y_WdfqHOmENJBpwPx_aFdXRc/edit?usp=sharing" class="grid-button">Sales Deals 2024</a>
+      <a href="https://docs.google.com/document/d/1M8gDnOy4zk3GbMNhmm2-qzXf1JEdYbdb/edit" class="grid-button">Signup Form</a>
+      <a href="https://docs.google.com/spreadsheets/d/14DxNtB1mNQFt3xsDEhk2I0eKk67m4KobpMoGRYuB2KQ/edit?gid=993891587#gid=993891587" class="grid-button">Winback Fee Exemption</a>
+      <a href="https://install.appcenter.ms/orgs/godroid/apps/godroid-production-release/distribution_groups/all-users-of-godroid-production-release" class="grid-button">Android App Link</a>
+    </div>
+    <div class="button-row">
+      <a href="https://docs.google.com/presentation/d/1CZ1Z4HGWm616OtGtjo5rnMlGOvg2m2qg/edit?usp=sharing&ouid=104074058265129163469&rtpof=true&sd=truev" class="grid-button">Close Lost Training</a>
+      <a href="https://docs.google.com/spreadsheets/d/1rtwivLpCUd-Ngv8b4WdLJUAjB075c8uXCWj445XoiIM/edit?usp=sharing" class="grid-button">Area Wise Leads</a>
+      <a href="https://docs.google.com/spreadsheets/d/1QGwNhdSKBEys-g6nUHlMtnBFYtTw1H8JWgNVuYWq1EU/edit?gid=0#gid=0" class="grid-button">Incubation Mapping</a>
+      <a href="https://sites.google.com/foodpanda.com/apacsfwiki/home?authuser=0" class="grid-button">Salesforce Wiki</a>
+      <a href="https://docs.google.com/presentation/d/1CZ1Z4HGWm616OtGtjo5rnMlGOvg2m2qg/edit#slide=id.g1112ea9f888_0_13" class="grid-button">Closed Lost Slide</a>
+      <a href="https://sites.google.com/foodpanda.com.bd/insurancebenefits?usp=sharing" class="grid-button">Metlife Alico Insurance</a>
+    </div>
+    <div class="button-row">
+      <a href="#" class="grid-button">Helpline: 09638747474 / 09678777556</a>
+      <a href="https://docs.google.com/spreadsheets/d/14DxNtB1mNQFt3xsDEhk2I0eKk67m4KobpMoGRYuB2KQ/edit?gid=1221018726#gid=1221018726" class="grid-button">Win Back Waiver</a>
+      <a href="https://docs.google.com/spreadsheets/d/1Ak4J6W261d_jibEFsPC3NewkGL6q-PJTBzagQ-HRB14/edit?gid=1172387515#gid=1172387515" class="grid-button">Contract Submission Tracker</a>
+      <a href="https://jira.deliveryhero.com/plugins/servlet/desk/portal/65/create/2296" class="grid-button">NCR</a>
+      <a href="https://docs.google.com/spreadsheets/d/1AtPF-wpE_Nml1_XY7rJ1MAx4AL4KXuyoCbehvgNIXtM/edit?gid=1859315472#gid=1859315472" class="grid-button">Vendor Payment 2024-25</a>
+    </div>
+    <div class="button-row">
+      <a href="https://docs.google.com/spreadsheets/d/1JdhLBdWEF_Bc96glEjLEkrp9Csi5_yoplhylaXGrZ8A/edit?gid=1027258483#gid=1027258483" class="grid-button">Return Order Policy</a>
+      <a href="https://docs.google.com/spreadsheets/d/1Hla5b0K9rjIwJWBQRnbhmVGb1Cw7Hn3dtGeiyMI8BDo/edit?gid=1435750335#gid=1435750335" class="grid-button">Close Lost Sheet</a>
+      <a href="https://docs.google.com/spreadsheets/d/1JdhLBdWEF_Bc96glEjLEkrp9Csi5_yoplhylaXGrZ8A/edit?gid=0#gid=0" class="grid-button">Restaurant Return Policy</a>
+      <a href="https://docs.google.com/spreadsheets/d/1E5qTciMT99BYlbwAJ81xhliY7c5BHWIIrOmKQdwegHU/edit?gid=808133360#gid=808133360" class="grid-button">Ihs Level</a>
+      <a href="https://docs.google.com/spreadsheets/d/1E5qTciMT99BYlbwAJ81xhliY7c5BHWIIrOmKQdwegHU/edit?gid=808133360#gid=808133360" class="grid-button">Agent Mapping</a>
+    </div>
+  </div>
+
+---
+
+<h2 class="main-content-heading">Important Vendor Data</h2>
+
+<div class="data-section">
+    <div class="info-table">
+        <h3>Sales Zone Leads Overview</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Area</th>
+                    <th>Total Leads</th>
+                    <th>Group Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Tejgaon</td><td>80</td><td>Group 1</td></tr>
+                <tr><td>Gulshan 2</td><td>78</td><td>Group 1</td></tr>
+                <tr><td>Motijheel</td><td>75</td><td>Group 1</td></tr>
+                <tr><td>Gulshan 1</td><td>61</td><td>Group 1</td></tr>
+                <tr><td>Bailey Road</td><td>38</td><td>Group 1</td></tr>
+                <tr><td>Malibag</td><td>15</td><td>Group 1</td></tr>
+                <tr><td>Paltan</td><td>13</td><td>Group 1</td></tr>
+                <tr><td>New Market</td><td>12</td><td>Group 1</td></tr>
+                <tr><td>Fakirapul</td><td>4</td><td>Group 1</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="info-table">
+        <h3>Grade Change Requirements (C/D to A/B)</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Metrics</th>
+                    <th>Location</th>
+                    <th>Gradings (A)</th>
+                    <th>Gradings (B)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td colspan="4" style="background-color:#2a2e38; color:#00ffcc; font-weight:bold;">Social Media</td></tr>
+                <tr><td>Facebook Followers</td><td>Dhaka</td><td>3500</td><td>2200</td></tr>
+                <tr><td>Google Reviews</td><td>Dhaka</td><td>150</td><td>80</td></tr>
+                <tr><td>Google Ratings</td><td>Dhaka</td><td>4</td><td>3.5</td></tr>
+                <tr><td colspan="4" style="background-color:#2a2e38; color:#00ffcc; font-weight:bold;">GTC</td></tr>
+                <tr><td>Ratings</td><td></td><td>4</td><td>3.5</td></tr>
+                <tr><td>Review</td><td></td><td>100</td><td>50</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+---
+
+<h2 class="main-content-heading">Facebook Groups</h2>
+<div class="group-section">
+    <a href="https://www.facebook.com/groups/194902207576164/" target="_blank"><button>Group 1</button></a>
+    <a href="https://www.facebook.com/groups/124080031627841/" target="_blank"><button>Group 2</button></a>
+    <a href="https://www.facebook.com/groups/555766911613356/" target="_blank"><button>Group 3</button></a>
+    <a href="https://www.facebook.com/groups/671481886885198/" target="_blank"><button>Group 4</button></a>
+    <a href="https://www.facebook.com/groups/foodbankbanglaesh/" target="_blank"><button>Group 5</button></a>
+    <a href="https://www.facebook.com/groups/foodinfoo/" target="_blank"><button>Group 6</button></a>
+    <a href="https://www.facebook.com/groups/foodmagazinebd/" target="_blank"><button>Group 7</button></a>
+    <a href="https://www.facebook.com/groups/585549435136281/" target="_blank"><button>Group 8</button></a>
+    <a href="https://www.facebook.com/groups/661411198541408/" target="_blank"><button>Group 9</button></a>
+    <a href="https://www.facebook.com/groups/1262493317191033/" target="_blank"><button>Group 10</button></a>
+    <a href="https://www.facebook.com/groups/onlineusers.bd/" target="_blank"><button>Group 11</button></a>
+    <a href="https://www.facebook.com/groups/625264704319509/" target="_blank"><button>Group 12</button></a>
+    <a href="https://www.facebook.com/groups/573437789504196/" target="_blank"><button>Group 13</button></a>
+    <a href="https://www.facebook.com/groups/230918710613193/" target="_blank"><button>Group 14</button></a>
+    <a href="https://www.facebook.com/groups/httpswww.facebook.comfoodferiwalabd20/" target="_blank"><button>Group 15</button></a>
+    <a href="https://www.facebook.com/groups/khilgaonfoodbankofficial/" target="_blank"><button>Group 16</button></a>
+    <a href="https://www.facebook.com/groups/703324730489984/" target="_blank"><button>Group 17</button></a>
+    <a href="https://www.facebook.com/groups/921463996022811/" target="_blank"><button>Group 18</button></a>
+    <a href="https://www.facebook.com/groups/FoodBank.Home/" target="_blank"><button>Group 19</button></a>
+    <a href="https://www.facebook.com/groups/new.foodbank/" target="_blank"><button>Group 20</button></a>
+    <a href="https://www.facebook.com/groups/foodbankbd24/" target="_blank"><button>Group 21</button></a>
+    <a href="https://www.facebook.com/groups/1698446793680474/" target="_blank"><button>Group 22</button></a>
+    <a href="https://www.facebook.com/groups/foodbankbd1/" target="_blank"><button>Group 23</button></a>
+    <a href="https://www.facebook.com/groups/foodbankmirpurarea/" target="_blank"><button>Group 24</button></a>
+    <a href="https://www.facebook.com/groups/foodbank2/" target="_blank"><button>Group 25</button></a>
+    <a href="https://www.facebook.com/groups/1337580046267696/" target="_blank"><button>Group 26</button></a>
+    <a href="https://www.facebook.com/groups/931534786968206/" target="_blank"><button>Group 27</button></a>
+    <a href="https://www.facebook.com/groups/572900242906760/" target="_blank"><button>Group 28</button></a>
+    <a href="https://www.facebook.com/groups/DhakaFoodbank/" target="_blank"><button>Group 29</button></a>
+    <a href="https://www.facebook.com/groups/foodbankdhanmondioffer/" target="_blank"><button>Group 30</button></a>
+    <a href="https://www.facebook.com/groups/1149124601796395/" target="_blank"><button>Group 31</button></a>
+    <a href="https://www.facebook.com/groups/KhilgaonFoodBank/" target="_blank"><button>Group 32</button></a>
+    <a href="https://www.facebook.com/groups/foodbankdhakadhanmondi/" target="_blank"><button>Group 33</button></a>
+    <a href="https://www.facebook.com/groups/330526660347434/" target="_blank"><button>Group 34</button></a>
+    <a href="https://www.facebook.com/groups/2110326352747268/" target="_blank"><button>Group 35</button></a>
+    <a href="https://www.facebook.com/groups/foodbank1/" target="_blank"><button>Group 36</button></a>
+    <a href="https://www.facebook.com/groups/240437004032883/" target="_blank"><button>Group 37</button></a>
+</div>
+
+  <script>
+    // === Clock ===
+    function updateClock() {
+      const now = new Date();
+      const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      const dayName = dayNames[now.getDay()];
+      const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      const date = now.toLocaleDateString();
+      // Clock element is hidden but JS still updates it if needed
+      // document.getElementById("clock").textContent = `${dayName}, ${date} - ${time}`; 
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // === Sales Tracking ===
+    const TARGET = 30;
+    let completed = parseInt(localStorage.getItem('completedSales')) || 0;
+
+    function updateRemaining() {
+      const remaining = Math.max(0, TARGET - completed);
+      document.getElementById("remaining").textContent = `Remaining Target: ${remaining}`;
+    }
+
+    document.getElementById("salesForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const input = document.getElementById("salesDone");
+      const sales = parseInt(input.value, 10);
+      if (!isNaN(sales) && sales > 0) {
+        completed += sales;
+        if (completed > TARGET) completed = TARGET;
+        localStorage.setItem('completedSales', completed);
+        updateRemaining();
+        updateWorkdays();
+        input.value = 1;
+      }
+    });
+
+    // === Workday Calculation ===
+    function getRemainingWorkdays() {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = today.getMonth();
+      // Find the 26th of the current month
+      const endDate = new Date(year, month, 26);
+      let count = 0;
+
+      // If today is past the 26th, there are 0 remaining workdays for this period
+      if (today > endDate) return 0; 
+      
+      // Start counting from today
+      let current = new Date(today);
+      while (current <= endDate) {
+        // Friday is day 5 (0=Sunday, 6=Saturday). We count all days EXCEPT Friday.
+        if (current.getDay() !== 5) { 
+          count++;
+        }
+        current.setDate(current.getDate() + 1);
+      }
+      return count;
+    }
+
+    function updateWorkdays() {
+      const workdays = getRemainingWorkdays();
+      document.getElementById("workdays").textContent = `Remaining Workdays (till 26th): ${workdays}`;
+    }
+
+    // === Init on Load ===
+    updateRemaining();
+    updateWorkdays();
+  </script>
+
+</body>
+</html>
